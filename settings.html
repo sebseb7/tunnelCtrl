@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TunnelCtrl Settings</title>
+    <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>TunnelCtrl</h1>
+            <div class="status-indicator">
+                <div class="status-dot" id="statusDot"></div>
+                <span id="statusText">0/0 Connected</span>
+            </div>
+        </header>
+
+        <main>
+            <section class="app-settings-section">
+                <h2>Application Settings</h2>
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="autoStartCheckbox">
+                            <span>Start with Windows</span>
+                        </label>
+                        <small>Automatically start TunnelCtrl when you log in</small>
+                    </div>
+                </div>
+            </section>
+
+            <section class="profiles-section">
+                <div class="section-header">
+                    <h2>SSH Profiles</h2>
+                    <button id="addProfileBtn" class="btn btn-primary btn-small">+ Add Profile</button>
+                </div>
+                
+                <div id="profilesList" class="profiles-list">
+                    <!-- Profiles will be dynamically inserted here -->
+                </div>
+                
+                <div id="noProfiles" class="no-profiles hidden">
+                    <p>No profiles configured. Click "Add Profile" to get started.</p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div class="footer-info">
+                <span id="overallStatus">Ready</span>
+            </div>
+            <div class="footer-buttons">
+                <button id="closeBtn" class="btn btn-secondary">Close</button>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Add/Edit Profile Modal -->
+    <div id="profileModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Add Profile</h3>
+                <button id="modalClose" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="profileName">Profile Name:</label>
+                    <input type="text" id="profileName" placeholder="e.g., Database Server">
+                </div>
+                <div class="form-group">
+                    <label for="profileCommand">SSH Command:</label>
+                    <input type="text" id="profileCommand" placeholder="ssh tunnel@host -p 22 -L1433:127.0.0.1:1433 -N -C">
+                    <small class="help-text">
+                        <strong>Important:</strong> Always include <code>-N</code> flag for tunnels (no remote command execution)
+                    </small>
+                </div>
+                
+                <div class="advanced-options">
+                    <h4>Connection Options</h4>
+                    
+                    <div class="form-row">
+                        <div class="form-group checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="profileKeepAlive" checked>
+                                <span>Keep-Alive</span>
+                            </label>
+                            <small>Prevent connection drops due to idle timeouts</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="profileKeepAliveInterval">Interval (seconds):</label>
+                            <input type="number" id="profileKeepAliveInterval" value="60" min="30" max="300">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="profileAutoReconnect" checked>
+                                <span>Auto-Reconnect</span>
+                            </label>
+                            <small>Automatically reconnect if connection drops</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="profileMaxReconnectAttempts">Max Attempts:</label>
+                            <input type="number" id="profileMaxReconnectAttempts" value="5" min="1" max="20">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="modalCancel" class="btn btn-secondary">Cancel</button>
+                <button id="modalSave" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification" class="notification hidden">
+        <span id="notificationText"></span>
+    </div>
+
+    <script src="settings.js"></script>
+</body>
+</html> 

@@ -1,0 +1,69 @@
+{
+  "name": "tunnel-ctrl",
+  "version": "1.0.0",
+  "description": "SSH Tunnel Status Monitor - Tray App",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build-win": "electron-builder --win",
+    "dev": "electron . --dev"
+  },
+  "keywords": [
+    "electron",
+    "ssh",
+    "tunnel",
+    "tray"
+  ],
+  "author": "sebseb7",
+  "license": "0BSD",
+  "devDependencies": {
+    "electron": "^22.0.0",
+    "electron-builder": "^24.0.0"
+  },
+  "dependencies": {
+    "auto-launch": "^5.0.5",
+    "electron-store": "^8.2.0",
+    "node-ssh": "^13.1.0"
+  },
+  "build": {
+    "appId": "com.tunnelctrl.app",
+    "productName": "TunnelCtrl",
+    "icon": "logo.png",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "settings.html",
+      "settings.js",
+      "settings.css",
+      "assets/**/*",
+      "logo.png"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ],
+      "publisherName": "TunnelCtrl",
+      "icon": "logo.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "TunnelCtrl"
+    },
+    "mac": {
+      "category": "public.app-category.utilities",
+      "icon": "logo.png"
+    }
+  }
+}
