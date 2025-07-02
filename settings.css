@@ -64,13 +64,64 @@ main {
 }
 
 .app-settings-section,
+.ssh-status-section,
 .profiles-section {
     margin-bottom: 20px;
 }
 
-.app-settings-section {
+.app-settings-section,
+.ssh-status-section {
     padding-bottom: 16px;
     border-bottom: 1px solid #e9ecef;
+}
+
+/* SSH Status Section */
+.ssh-status-container {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 16px;
+    border-left: 3px solid #667eea;
+}
+
+.ssh-status-item {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.ssh-status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ssh-status-indicator .status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #ffc107;
+    transition: background-color 0.3s ease;
+}
+
+.ssh-status-indicator .status-dot.installed {
+    background: #28a745;
+}
+
+.ssh-status-indicator .status-dot.not-installed {
+    background: #dc3545;
+}
+
+.ssh-status-details {
+    font-size: 12px;
+    color: #666;
+    margin-left: 20px;
+    line-height: 1.4;
+}
+
+.ssh-status-actions {
+    display: flex;
+    gap: 8px;
+    margin-left: 20px;
 }
 
 .settings-grid {

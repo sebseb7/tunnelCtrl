@@ -30,6 +30,23 @@
                 </div>
             </section>
 
+            <section class="ssh-status-section">
+                <h2>SSH Status</h2>
+                <div class="ssh-status-container">
+                    <div class="ssh-status-item">
+                        <div class="ssh-status-indicator">
+                            <div class="status-dot" id="sshStatusDot"></div>
+                            <span id="sshStatusText">Checking SSH installation...</span>
+                        </div>
+                        <div class="ssh-status-details" id="sshStatusDetails"></div>
+                        <div class="ssh-status-actions" id="sshStatusActions" style="display: none;">
+                            <button id="installSshBtn" class="btn btn-primary btn-small">Install SSH</button>
+                            <button id="recheckSshBtn" class="btn btn-secondary btn-small">Recheck</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <section class="profiles-section">
                 <div class="section-header">
                     <h2>SSH Profiles</h2>

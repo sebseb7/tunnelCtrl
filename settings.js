@@ -13,6 +13,14 @@ class SettingsUI {
             // App settings
             autoStartCheckbox: document.getElementById('autoStartCheckbox'),
             
+            // SSH status elements
+            sshStatusDot: document.getElementById('sshStatusDot'),
+            sshStatusText: document.getElementById('sshStatusText'),
+            sshStatusDetails: document.getElementById('sshStatusDetails'),
+            sshStatusActions: document.getElementById('sshStatusActions'),
+            installSshBtn: document.getElementById('installSshBtn'),
+            recheckSshBtn: document.getElementById('recheckSshBtn'),
+            
             // Profile list elements
             profilesList: document.getElementById('profilesList'),
             noProfiles: document.getElementById('noProfiles'),
@@ -44,6 +52,7 @@ class SettingsUI {
         this.attachEventListeners();
         this.loadAppSettings();
         this.loadProfiles();
+        this.checkSSHStatus();
         this.startStatusPolling();
     }
 
@@ -55,6 +64,10 @@ class SettingsUI {
     attachEventListeners() {
         // App settings event listeners
         this.elements.autoStartCheckbox.addEventListener('change', () => this.setAutoStart());
+        
+        // SSH status event listeners
+        this.elements.installSshBtn.addEventListener('click', () => this.openSSHInstallationHelp());
+        this.elements.recheckSshBtn.addEventListener('click', () => this.checkSSHStatus());
         
         // Button event listeners
         this.elements.addProfileBtn.addEventListener('click', () => this.showAddProfileModal());
@@ -476,6 +489,50 @@ class SettingsUI {
             await ipcRenderer.invoke('close-settings-window');
         } catch (error) {
             console.error('Failed to close window:', error);
+        }
+    }
+
+    async checkSSHStatus() {
+        try {
+            // Update UI to show checking status
+            this.elements.sshStatusDot.className = 'status-dot';
+            this.elements.sshStatusText.textContent = 'Checking SSH installation...';
+            this.elements.sshStatusDetails.textContent = '';
+            this.elements.sshStatusActions.style.display = 'none';
+            
+            const sshStatus = await ipcRenderer.invoke('check-ssh-installation');
+            
+            if (sshStatus.installed) {
+                // SSH is installed
+                this.elements.sshStatusDot.className = 'status-dot installed';
+                this.elements.sshStatusText.textContent = 'SSH is installed and ready';
+                this.elements.sshStatusDetails.textContent = `OpenSSH version: ${sshStatus.version}`;
+                this.elements.sshStatusActions.style.display = 'none';
+            } else {
+                // SSH is not installed
+                this.elements.sshStatusDot.className = 'status-dot not-installed';
+                this.elements.sshStatusText.textContent = 'SSH is not installed';
+                this.elements.sshStatusDetails.textContent = 'SSH is required for creating tunnels. Click "Install SSH" for installation instructions.';
+                this.elements.sshStatusActions.style.display = 'flex';
+            }
+        } catch (error) {
+            console.error('Failed to check SSH status:', error);
+            this.elements.sshStatusDot.className = 'status-dot not-installed';
+            this.elements.sshStatusText.textContent = 'Error checking SSH status';
+            this.elements.sshStatusDetails.textContent = 'Unable to verify SSH installation. Please check manually.';
+            this.elements.sshStatusActions.style.display = 'flex';
+        }
+    }
+
+    async openSSHInstallationHelp() {
+        try {
+            const result = await ipcRenderer.invoke('open-ssh-installation-help');
+            if (result.success) {
+                this.showNotification('Opening SSH installation instructions in your browser', 'info');
+            }
+        } catch (error) {
+            console.error('Failed to open SSH installation help:', error);
+            this.showNotification('Failed to open installation instructions', 'error');
         }
     }
 

@@ -1,7 +1,8 @@
-const { app, Tray, Menu, BrowserWindow, ipcMain, dialog, nativeImage } = require('electron');
+const { app, Tray, Menu, BrowserWindow, ipcMain, dialog, nativeImage, shell } = require('electron');
 const { spawn, exec } = require('child_process');
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 const AutoLaunch = require('auto-launch');
 const Store = require('electron-store');
 
@@ -60,6 +61,8 @@ class TunnelCtrl {
         ipcMain.handle('get-app-settings', () => this.store.get('appSettings', { autoStart: false }));
         ipcMain.handle('set-auto-start', (event, enabled) => this.setAutoStart(enabled));
         ipcMain.handle('close-settings-window', () => this.closeSettingsWindow());
+        ipcMain.handle('check-ssh-installation', () => this.checkSSHInstallation());
+        ipcMain.handle('open-ssh-installation-help', () => this.openSSHInstallationHelp());
     }
 
     createTray() {
@@ -662,6 +665,50 @@ class TunnelCtrl {
         if (this.settingsWindow) {
             this.settingsWindow.close();
         }
+    }
+
+    async checkSSHInstallation() {
+        return new Promise((resolve) => {
+            // Check if ssh.exe is available in PATH
+            exec('ssh -V', (error, stdout, stderr) => {
+                if (error) {
+                    // SSH not found or not working
+                    resolve({
+                        installed: false,
+                        error: error.message,
+                        version: null
+                    });
+                } else {
+                    // SSH found, extract version info
+                    const versionOutput = stderr || stdout; // SSH version often goes to stderr
+                    const versionMatch = versionOutput.match(/OpenSSH[_\s]+([^\s,]+)/i);
+                    resolve({
+                        installed: true,
+                        error: null,
+                        version: versionMatch ? versionMatch[1] : 'Unknown'
+                    });
+                }
+            });
+        });
+    }
+
+    openSSHInstallationHelp() {
+        const platform = os.platform();
+        let url = '';
+        
+        if (platform === 'win32') {
+            // Windows 11/10 SSH installation instructions
+            url = 'https://docs.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse';
+        } else if (platform === 'darwin') {
+            // macOS - SSH is pre-installed, but show general info
+            url = 'https://support.apple.com/guide/terminal/open-or-quit-terminal-apd5265185d-f365-44cb-8b09-71a064a42125/mac';
+        } else {
+            // Linux/other - general OpenSSH info
+            url = 'https://www.openssh.com/';
+        }
+        
+        shell.openExternal(url);
+        return { success: true, url };
     }
 
     cleanup() {
